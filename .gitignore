@@ -3,3 +3,4 @@ __pycache__/
 !felony_offenses.xlsx
 venv/
 *.png
+*.pyc
