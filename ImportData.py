@@ -8,7 +8,7 @@ def get_offenses():
     path_fmd = "https://raw.github.com/natethedrummer/bail/master/felony_offenses.xlsx"
     xl_fmd = pd.ExcelFile(path_fmd)
     df_offenses = xl_fmd.parse("Sheet1")
-    
+
     # bin offense
     series_offense = pd.Series({'ARSON': 'ARSON',
                               'SALE DRUG': 'DRUG',
