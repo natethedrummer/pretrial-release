@@ -18,6 +18,7 @@ df_offenses = get_offenses()
 
 # descriptive statistics
 df_ds = ds(df_offenses)
+print(df_ds)
 
 # mean bail amount by demographics
 

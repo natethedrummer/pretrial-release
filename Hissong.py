@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd 
 
 # create descriptive statistics table
@@ -11,55 +12,84 @@ def descriptive_stats(df_offenses):
                 'BOND $',
                 'felony priors',
                 'Misd priors',
+                'OffenseDescription',
                 'offense_bin',
                 'hired_attorney',
                 'gender',
                 'race',
                 'age']]
     
+    # age
+    df.rename(columns={'age': 'Age'}, inplace=True)
+    
     # made bail
-    df.rename(columns={'access': 'made_bail'}, inplace=True)
+    df.rename(columns={'access': 'Made Bail'}, inplace=True)
     
     # prior misdemeanors
-    df.rename(columns={'Misd priors': 'prior_misdemeanors'}, inplace=True)
-    
+    df.rename(columns={'Misd priors': 'Number of Prior Misdemeanors'}, inplace=True)
+   
+    # prior misdemeanor (yes/no)
+    df['Prior Misdemeanor (Yes/No)'] = np.where(df['Number of Prior Misdemeanors']>=1, 1, 0)
+
     # prior felonies
-    df.rename(columns={'felony priors': 'prior_felonies'}, inplace=True)
+    df.rename(columns={'felony priors': 'Number of Prior Felonies'}, inplace=True)
     
+    # prior felony (yes/no)
+    df['Prior Felony (Yes/No)'] = np.where(df['Number of Prior Felonies']>=1, 1, 0)
+
     # bond amount    
     df[~(df['BOND $'] == 'NO BOND')]    
-    df['bond_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+    df['Bond Amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
     df.drop('BOND $', axis=1, inplace=True)
     
     # dwi
     series = pd.Series({'DWI': 1})
-    df['dwi'] = df['offense_bin'].map(series)
-    df['dwi'].fillna(value=0, inplace=True)
+    df['DWI (Yes/No)'] = df['offense_bin'].map(series)
+    df['DWI (Yes/No)'].fillna(value=0, inplace=True)
     
+    # family offense
+    df['Offense Against Family (Yes/No)'] = df['OffenseDescription'].str.contains('fam|chil|kid', case=False, na=False)
+    df['Offense Against Family (Yes/No)'] = df['Offense Against Family (Yes/No)'].astype(int)
+
     # retained private attorney
-    df.rename(columns={'hired_attorney': 'private_attorney'}, inplace=True)
+    df.rename(columns={'hired_attorney': 'Retained Private Attorney (Yes/No)'}, inplace=True)
     
     # male
     series = pd.Series({'M': 1})
-    df['male'] = df['gender'].map(series)
-    df['male'].fillna(value=0, inplace=True)
+    df['Male (Yes/No)'] = df['gender'].map(series)
+    df['Male (Yes/No)'].fillna(value=0, inplace=True)
     df.drop('gender', axis=1, inplace=True)
     
     # black
     series = pd.Series({'BLACK': 1})
-    df['black'] = df['race'].map(series)
-    df['black'].fillna(value=0, inplace=True)
+    df['Black (Yes/No)'] = df['race'].map(series)
+    df['Black (Yes/No)'].fillna(value=0, inplace=True)
     df.groupby('race').count()
     
     # hispanic
     series = pd.Series({'HISPANIC': 1})
-    df['hispanic'] = df['race'].map(series)
-    df['hispanic'].fillna(value=0, inplace=True)
+    df['Hispanic (Yes/No)'] = df['race'].map(series)
+    df['Hispanic (Yes/No)'].fillna(value=0, inplace=True)
     df.drop('race', axis=1, inplace=True)
-    
+   
+    # produce summary statistics
     df = df.describe()
-    df.index.name = 'variable'
     
+    # include count, mean and standard deviation only
+    df = df.ix[['count','mean','std']]
+
+    # transpose
+    df = df.transpose()
+
+    # rename index as Variable
+    df.index.name = 'Variable'
+
+    # rename stats
+    df.rename(columns={'count': 'N',
+        'mean': 'Mean or Percent',
+        'std': 'Standard Deviation'
+        }, inplace=True)
+
     # output to excel
     writer = pd.ExcelWriter('descriptive_statistics.xlsx')
     df.to_excel(writer, 'Sheet1')
