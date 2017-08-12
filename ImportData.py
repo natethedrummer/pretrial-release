@@ -33,3 +33,12 @@ def get_offenses():
     df_offenses['offense_bin'] = df_offenses['Offense'].map(series_offense)
     
     return df_offenses
+
+# test
+if __name__ == "__main__":
+   
+    df = get_offenses()
+
+    print(df.columns)
+
+    print(df.head())
