@@ -1,5 +1,7 @@
+# import packages
 import numpy as np
 import pandas as pd 
+from ImportData import get_offenses
 
 # create descriptive statistics table
 def descriptive_stats(df_offenses):
@@ -14,11 +16,30 @@ def descriptive_stats(df_offenses):
                 'Misd priors',
                 'OffenseDescription',
                 'offense_bin',
+      		'OffenseClass',
                 'hired_attorney',
                 'gender',
                 'race',
                 'age']]
     
+    # FC Offense
+    df['FC Offense'] = np.where(df['OffenseClass']=='FC', 1, 0)    
+
+    # F1 Offense
+    df['F1 Offense'] = np.where(df['OffenseClass']=='F1', 1, 0)    
+    
+    # F2 Offense
+    df['F2 Offense'] = np.where(df['OffenseClass']=='F2', 1, 0)    
+
+    # F3 Offense
+    df['F3 Offense'] = np.where(df['OffenseClass']=='F3', 1, 0)    
+
+    # FS Offense
+    df['FS Offense'] = np.where(df['OffenseClass']=='FS', 1, 0)    
+    
+    # drop OffenseClass
+    df.drop('OffenseClass', axis=1, inplace=True)
+
     # age
     df.rename(columns={'age': 'Age'}, inplace=True)
     
@@ -96,3 +117,12 @@ def descriptive_stats(df_offenses):
     writer.save()
     
     return df
+
+# test
+if __name__ == "__main__":
+
+    df_offenses = get_offenses()
+
+    df = descriptive_stats(df_offenses)
+
+    print(df) 
