@@ -125,4 +125,81 @@ if __name__ == "__main__":
 
     df = descriptive_stats(df_offenses)
 
-    print(df) 
+    print(df)
+
+# define bail_amount_by_demographic
+def bail_amount_by_demographic(df_offenses):
+
+    # create frames list
+    frames = []
+
+    # disposed cases only
+    df = df_offenses[df_offenses['CASE DISPOSED STATUS'] == 'DISPOSED']
+
+    # select features    
+    df = df[['BOND $',
+               'gender',
+                'race',
+                'age']]
+    # bail amount    
+    df[~(df['BOND $'] == 'NO BOND')]    
+    df['Bail Amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+    df.drop('BOND $', axis=1, inplace=True)
+
+    # rename gender to sex
+    df.rename(columns={'gender': 'sex'}, inplace=True)
+
+    # get average bail amount by sex and age
+    bins = [0, 20, 30, 45, 100]
+    
+    group_names = ['Under 20',
+	'Twenties',
+	'30 to 45',
+	'Over 45']
+
+    df['age category'] = pd.cut(df['age'], bins, labels=group_names)
+
+    df_frame = df['Bail Amount'].groupby([df['age category'], df['sex']]).describe()
+
+    frames.append(df_frame)
+
+    # create demographics list
+    demographics = ['sex','race']
+
+    # get average bail amount by demographics
+    for d in demographics:
+
+        df_frame = df['Bail Amount'].groupby(df[d]).describe()
+
+        frames.append(df_frame)
+
+    # write each table to an Excel sheet
+    writer = pd.ExcelWriter('bail_amount_by_demographic.xlsx')
+
+    i=0
+ 
+    for f in frames:
+
+        df = f
+        
+        # include count and mean only
+        df = df[['count','mean']]
+
+        # rename stats
+        df.rename(columns={'count': 'N',
+            'mean': 'Mean'
+            }, inplace=True)
+
+        # output to excel
+        df.to_excel(writer, 'Sheet' + str(i))
+       
+        i+=1
+
+    writer.save()
+ 
+# test
+if __name__ == "__main__":
+
+    df_offenses = get_offenses()
+
+    bail_amount_by_demographic(df_offenses)
