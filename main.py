@@ -4,7 +4,7 @@ import seaborn as sns
 
 import numpy as np
 
-from Hissong import descriptive_stats as ds
+from Hissong import descriptive_stats as ds, bail_amount_by_demographic
 from ImportData import get_offenses
 from ModelDiagnostics import coef, accuracy, pred
 from Utility import out_to_xl
@@ -16,13 +16,20 @@ from sklearn.linear_model import LogisticRegression
 # get data frame of felony offenses and release status
 df_offenses = get_offenses()
 
-# descriptive statistics
+# descriptive statistics and mean bail amount
 df_ds = ds(df_offenses)
 print(df_ds)
 
 # mean bail amount by demographics
+bail_amount_by_demographic(df_offenses)
 
 # ols results of natural log of bond amount
+# model 1: felony class, family, dwi, priors (yes/no)
+# model 2: felony class, family, dwi, priors (yes/no), privateatt, black, hispanic, female, age
+# coefficient, standard error, sig at 0.10, 0.05, or 0.01
+# count
+# F-stat w/ p-value
+# r-squared and adj r-squared
 
 # estimate coefficients and odds ratio of logit equation: probability of bail
 

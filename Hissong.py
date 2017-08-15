@@ -180,6 +180,8 @@ def bail_amount_by_demographic(df_offenses):
  
     for f in frames:
 
+        print(f)
+
         df = f
         
         # include count and mean only
