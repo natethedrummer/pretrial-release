@@ -18,13 +18,10 @@ df_offenses = get_offenses()
 
 # descriptive statistics and mean bail amount
 df_ds = ds(df_offenses)
-<<<<<<< HEAD
 print(df_ds)
 
 # mean bail amount by demographics
 bail_amount_by_demographic(df_offenses)
-=======
->>>>>>> c6d8d52d9832548824c298c548e7829d62b17ea7
 
 # ols results of natural log of bond amount
 # model 1: felony class, family, dwi, priors (yes/no)
