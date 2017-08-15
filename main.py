@@ -4,7 +4,7 @@ import seaborn as sns
 
 import numpy as np
 
-from Hissong import descriptive_stats as ds
+from Hissong import descriptive_stats as ds, bail_amount_by_demographic
 from ImportData import get_offenses
 from ModelDiagnostics import coef, accuracy, pred
 from Utility import out_to_xl
@@ -21,6 +21,7 @@ df_ds = ds(df_offenses)
 print(df_ds)
 
 # mean bail amount by demographics
+bail_amount_by_demographic(df_offenses)
 
 # ols results of natural log of bond amount
 
