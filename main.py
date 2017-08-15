@@ -16,14 +16,23 @@ from sklearn.linear_model import LogisticRegression
 # get data frame of felony offenses and release status
 df_offenses = get_offenses()
 
-# descriptive statistics
+# descriptive statistics and mean bail amount
 df_ds = ds(df_offenses)
+<<<<<<< HEAD
 print(df_ds)
 
 # mean bail amount by demographics
 bail_amount_by_demographic(df_offenses)
+=======
+>>>>>>> c6d8d52d9832548824c298c548e7829d62b17ea7
 
 # ols results of natural log of bond amount
+# model 1: felony class, family, dwi, priors (yes/no)
+# model 2: felony class, family, dwi, priors (yes/no), privateatt, black, hispanic, female, age
+# coefficient, standard error, sig at 0.10, 0.05, or 0.01
+# count
+# F-stat w/ p-value
+# r-squared and adj r-squared
 
 # estimate coefficients and odds ratio of logit equation: probability of bail
 
