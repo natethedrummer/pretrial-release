@@ -111,10 +111,8 @@ def descriptive_stats(df_offenses):
         'std': 'Standard Deviation'
         }, inplace=True)
 
-    # output to excel
-    writer = pd.ExcelWriter('descriptive_statistics.xlsx')
-    df.to_excel(writer, 'Sheet1')
-    writer.save()
+    # output to csv
+    df.to_csv('descriptive_statistics.csv')
     
     return df
 
@@ -157,6 +155,10 @@ def bail_amount_by_demographic(df_offenses):
 	'30 to 45',
 	'Over 45']
 
+    df = df[df['age'] != '#VALUE!']
+
+    df['age'] = df['age'].astype(float)
+
     df['age category'] = pd.cut(df['age'], bins, labels=group_names)
 
     df_frame = df['Bail Amount'].groupby([df['age category'], df['sex']]).describe()
@@ -172,9 +174,6 @@ def bail_amount_by_demographic(df_offenses):
         df_frame = df['Bail Amount'].groupby(df[d]).describe()
 
         frames.append(df_frame)
-
-    # write each table to an Excel sheet
-    writer = pd.ExcelWriter('bail_amount_by_demographic.xlsx')
 
     i=0
  
@@ -193,11 +192,9 @@ def bail_amount_by_demographic(df_offenses):
             }, inplace=True)
 
         # output to excel
-        df.to_excel(writer, 'Sheet' + str(i))
+        df.to_csv('bail_by_demographics_' + str(i) + '.csv')
        
         i+=1
-
-    writer.save()
  
 # test
 if __name__ == "__main__":

@@ -107,4 +107,6 @@ df_accuracy = accuracy(model, X_test, y_test)
 df_pred = pred(model, X, y, df_offenses)
 
 # output to excel
-out_to_xl(df_coef, df_accuracy, df_pred)
+df_coef.to_csv('coef.csv')
+df_accuracy.to_csv('accuracy.csv') 
+df_pred.to_csv('pred.csv')

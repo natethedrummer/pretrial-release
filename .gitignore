@@ -1,5 +1,6 @@
 __pycache__/
 *.xlsx
+*.csv
 !felony_offenses.csv
 venv/
 *.png

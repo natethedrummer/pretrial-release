@@ -5,9 +5,8 @@ import pandas as pd
 def get_offenses():
 
     # import Felony Master Database clean excel spreadsheet
-    path_fmd = "https://raw.github.com/natethedrummer/bail/master/felony_offenses.csv"
-    xl_fmd = pd.ExcelFile(path_fmd)
-    df_offenses = xl_fmd.parse("Sheet1")
+    path_fmd = "https://raw.github.com/natethedrummer/pretrial-release/master/felony_offenses.csv"
+    df_offenses = pd.read_csv(path_fmd)
 
     # bin offense
     series_offense = pd.Series({'ARSON': 'ARSON',
