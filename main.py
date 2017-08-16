@@ -1,5 +1,6 @@
 # import packages
 import matplotlib; matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 import numpy as np
@@ -68,6 +69,8 @@ fig_corr = plot_corr.get_figure()
 
 fig_corr.savefig("plot_corr.png")
     
+plt.close()
+
 # specify regression formula
 y, X = dmatrices('access ~ priors + hired_attorney + poc + gender + offense_bin',
                   df_release, 
@@ -94,6 +97,8 @@ plot_coef = sns.barplot(x="feature", y="probability", data=df_coef)
 fig_coef = plot_coef.get_figure()
 
 fig_coef.savefig("plot_coef.png")
+
+plt.close()
 
 # report model accuracy
 df_accuracy = accuracy(model, X_test, y_test)

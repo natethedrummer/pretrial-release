@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
+
 from sklearn.feature_selection import chi2
-from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_score, f1_score, mean_squared_error, accuracy_score
+from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_score, f1_score, mean_squared_error, accuracy_score, r2_score
 
 # report coefficients
 def coef(model, X, X_train, y_train):
@@ -20,7 +21,6 @@ def coef(model, X, X_train, y_train):
 
     df_coef['coefficient'] = df_coef['coefficient'].str[0]
     
-    # intercept    
     df_intercept = pd.DataFrame(data=model.intercept_,
                                 index=[0],
                                 columns=['coefficient'])
@@ -109,4 +109,14 @@ def accuracy(model, X_test, y_test):
             accuracy_score(y_true, y_pred)
             ,2)
     
+    # r-squared
+    r_squared = r2_score(y_true, y_pred)
+    df_accuracy['r_squared'] = r_squared
+
+    # adjusted r-squared
+    ss_residual = sum((y_true- y_pred)**2)
+    ss_total = sum((y_true-np.mean(y_true))**2)
+    adj_r_squared = 1 - (1-r_squared)*(len(y_true)-1)/(len(y_true)-X_test.shape[1]-1) 
+    df_accuracy['adj_r_squared'] = adj_r_squared
+
     return df_accuracy
