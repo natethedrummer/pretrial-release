@@ -2,6 +2,7 @@
 import matplotlib; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+import graphviz
 
 import numpy as np
 
@@ -13,6 +14,7 @@ from Utility import out_to_xl
 from patsy import dmatrices
 from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn import tree
 
 # get data frame of felony offenses and release status
 df_offenses = get_offenses()
@@ -45,10 +47,26 @@ df_release = df_offenses[['SPN',
                     'hired_attorney',
                     'poc',
                     'gender',
-                    'offense_bin']]
+                    'offense_bin',
+                    'ROBBERY',
+                    'SEX ABUSE',
+                    'DWI',
+                    'MURDER',
+                    'DRUG',
+                    'OTHER',
+                    'ARSON',
+                    'KIDNAPPING']]
 
 # check for multicollinearity 
-df_corr = df_release[['priors', 'hired_attorney', 'poc', 'gender', 'offense_bin']].corr()
+df_corr = df_release[['priors', 'hired_attorney', 'poc', 'gender', 
+'ROBBERY',
+'SEX ABUSE',
+'DWI',
+'MURDER',
+'DRUG',
+'ARSON',
+'KIDNAPPING',
+'access']].corr()
 
 for col in df_corr.columns.values:
 
@@ -78,6 +96,14 @@ y, X = dmatrices('access ~ priors + hired_attorney + poc + gender + offense_bin'
     
 # flatten y into a 1-D array for scikit-learn
 y_ravel = np.ravel(y)
+
+# decision tree
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X, y_ravel)
+
+dot_data = tree.export_graphviz(clf, out_file=None)
+graph = graphviz.Source(dot_data)
+graph.render('decision_tree')
 
 # split into train and validate
 X_train, X_test, y_train, y_test = train_test_split(X, y_ravel, 

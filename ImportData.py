@@ -31,6 +31,13 @@ def get_offenses():
 
     df_offenses['offense_bin'] = df_offenses['Offense'].map(series_offense)
     
+    # binary offense variables
+    offense_list = df_offenses['offense_bin'].unique().tolist()
+    for offense in offense_list:
+        series = pd.Series({offense: 1})
+        df_offenses[offense] = df_offenses['offense_bin'].map(series)
+        df_offenses[offense].fillna(value=0, inplace=True)
+
     return df_offenses
 
 # test
