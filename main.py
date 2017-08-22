@@ -1,40 +1,35 @@
 # import packages
-import matplotlib; matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import seaborn as sns
-import graphviz
-
 import numpy as np
-
-from Hissong import descriptive_stats as ds, bail_amount_by_demographic
+import pandas as pd
 from ImportData import get_offenses
-from ModelDiagnostics import coef, accuracy, pred
-from Utility import out_to_xl
-
-from patsy import dmatrices
-from sklearn.cross_validation import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn import tree
-
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 # get data frame of felony offenses and release status
-df_offenses = get_offenses()
+df = get_offenses()
 
-# descriptive statistics and mean bail amount
-df_ds = ds(df_offenses)
-print(df_ds)
+df = df[np.isfinite(df['Bond Amount'])]
+df = df[df['Bond Amount'] > 0]
+df['bond_amount_ln'] = np.log(df['Bond Amount'])
 
-# mean bail amount by demographics
-bail_amount_by_demographic(df_offenses)
+df = df[df['Age'] != "#VALUE!"]
+df['Age'] = df['Age'].astype(float)
 
+df = df[['SPN 2','bond_amount_ln', 'F1', 'F2', 'F3', 'FC', 'family_offense', 'dwi_offense', 'prior_felony', 'prior_misdemeanor',
+    'hired_attorney', 'black', 'hispanic', 'female', 'Age']]
+
+
+ 
 # ols results of natural log of bond amount
+
 # model 1: felony class, family, dwi, priors (yes/no)
-results = smf.ols('access ~ priors + hired_attorney + poc + gender + offense_bin', data=df_offenses).fit()
+results = smf.ols('bond_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony + prior_misdemeanor', data=df).fit()
 print(results.summary())
 
 # model 2: felony class, family, dwi, priors (yes/no), privateatt, black, hispanic, female, age
+results = smf.ols('bond_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony + prior_misdemeanor + hired_attorney + black + hispanic + female + Age', data=df).fit()
+print(results.summary())
+
 # coefficient, standard error, sig at 0.10, 0.05, or 0.01
 # count
 # F-stat w/ p-value
@@ -44,101 +39,4 @@ print(results.summary())
 
 # estimated probability of bail for selected defendant types
 
-# select features
-df_release = df_offenses[['SPN',
-                    'access',
-                    'priors',
-                    'f_priors',
-                    'm_priors',
-                    'hired_attorney',
-                    'poc',
-                    'gender',
-                    'offense_bin',
-                    'ROBBERY',
-                    'SEX ABUSE',
-                    'DWI',
-                    'MURDER',
-                    'DRUG',
-                    'OTHER',
-                    'ARSON',
-                    'KIDNAPPING']]
 
-# check for multicollinearity 
-df_corr = df_release[['priors', 'hired_attorney', 'poc', 'gender', 
-'ROBBERY',
-'SEX ABUSE',
-'DWI',
-'MURDER',
-'DRUG',
-'ARSON',
-'KIDNAPPING',
-'access']].corr()
-
-for col in df_corr.columns.values:
-
-    df_corr[col] = round(df_corr[col],2)
-
-    if (df_corr[col].max() < 1) & (df_corr[col].max() > 0.5):
-        print("Multicollinearity Test: Fail")
-        print(df_corr)
-        break
-    else:
-        pass        
-
-plot_corr = sns.heatmap(df_corr, 
-            xticklabels=df_corr.columns.values,
-            yticklabels=df_corr.columns.values)
-
-fig_corr = plot_corr.get_figure()
-
-fig_corr.savefig("plot_corr.png")
-    
-plt.close()
-
-# specify regression formula
-y, X = dmatrices('access ~ priors + hired_attorney + poc + gender + offense_bin',
-                  df_release, 
-                  return_type="dataframe")
-    
-# flatten y into a 1-D array for scikit-learn
-y_ravel = np.ravel(y)
-
-# decision tree
-clf = tree.DecisionTreeClassifier()
-clf = clf.fit(X, y_ravel)
-
-dot_data = tree.export_graphviz(clf, out_file=None)
-graph = graphviz.Source(dot_data)
-graph.render('decision_tree')
-
-# split into train and validate
-X_train, X_test, y_train, y_test = train_test_split(X, y_ravel, 
-                                                    test_size=0.3, 
-                                                    random_state=0)    
-
-# estimate coefficients
-model = LogisticRegression(solver='newton-cg', multi_class='multinomial')
-
-model.fit(X_train, y_train)
-
-# report feature importance
-df_coef = coef(model, X, X_train, y_train)
-
-plot_coef = sns.barplot(x="feature", y="probability", data=df_coef)
-
-fig_coef = plot_coef.get_figure()
-
-fig_coef.savefig("plot_coef.png")
-
-plt.close()
-
-# report model accuracy
-df_accuracy = accuracy(model, X_test, y_test)
-
-# report predictions 
-df_pred = pred(model, X, y, df_offenses)
-
-# output to excel
-df_coef.to_csv('coef.csv')
-df_accuracy.to_csv('accuracy.csv') 
-df_pred.to_csv('pred.csv')
