@@ -16,6 +16,9 @@ from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import tree
 
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
 # get data frame of felony offenses and release status
 df_offenses = get_offenses()
 
@@ -28,6 +31,9 @@ bail_amount_by_demographic(df_offenses)
 
 # ols results of natural log of bond amount
 # model 1: felony class, family, dwi, priors (yes/no)
+results = smf.ols('access ~ priors + hired_attorney + poc + gender + offense_bin', data=df_offenses).fit()
+print(results.summary())
+
 # model 2: felony class, family, dwi, priors (yes/no), privateatt, black, hispanic, female, age
 # coefficient, standard error, sig at 0.10, 0.05, or 0.01
 # count
