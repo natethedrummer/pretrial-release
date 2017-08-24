@@ -1,7 +1,7 @@
 # import packages
 from ImportData import get_offenses
 from DescribeData import descriptive_stats, bail_amount_by_demographic 
-from ModelData import explain_bond_amount
+from ModelData import explain_bond_amount, explain_made_bail
 
 
 # get data frame of felony offenses and release status
@@ -21,6 +21,7 @@ explain_bond_amount(df)
 
 
 # estimate coefficients and odds ratio of logit equation: probability of bail
+explain_made_bail(df)
 
 
 # estimated probability of bail for selected defendant types

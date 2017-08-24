@@ -10,7 +10,7 @@ def descriptive_stats(df):
     df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
     
     # select features    
-    df = df[['Made Bail',
+    df = df[['made_bail',
                 'bond_amount',
                 'prior_felonies',
                 'prior_misdemeanors',
@@ -80,8 +80,6 @@ def bail_amount_by_demographic(df):
 	'Twenties',
 	'30 to 45',
 	'Over 45']
-
-    df = df[df['age'] != '#VALUE!']
 
     df['age'] = df['age'].astype(float)
 

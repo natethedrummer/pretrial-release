@@ -12,9 +12,18 @@ def get_offenses():
     # bond amount    
     df[~(df['BOND $'] == 'NO BOND')]    
     df['bond_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
- 
+
+    # bond_amount_ln	
+    df = df[np.isfinite(df['bond_amount'])]
+    df = df[df['bond_amount'] > 0]
+    df['bond_amount_ln'] = np.log(df['bond_amount'])
+
+    # age 
+    df = df[df['age'] != "#VALUE!"]
+    df['age'] = df['age'].astype(float)
+
     # made bail
-    df.rename(columns={'access': 'Made Bail'}, inplace=True)
+    df.rename(columns={'access': 'made_bail'}, inplace=True)
  
     # bin offense
     series_offense = pd.Series({'ARSON': 'ARSON',
