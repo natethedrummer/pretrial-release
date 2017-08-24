@@ -7,8 +7,15 @@ def get_offenses():
 
     # import Felony Master Database clean excel spreadsheet
     path_fmd = "https://raw.github.com/natethedrummer/pretrial-release/master/felony_offenses.csv"
-    df_offenses = pd.read_csv(path_fmd)
+    df = pd.read_csv(path_fmd)
 
+    # bond amount    
+    df[~(df['BOND $'] == 'NO BOND')]    
+    df['bond_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+ 
+    # made bail
+    df.rename(columns={'access': 'Made Bail'}, inplace=True)
+ 
     # bin offense
     series_offense = pd.Series({'ARSON': 'ARSON',
                               'SALE DRUG': 'DRUG',
@@ -30,16 +37,14 @@ def get_offenses():
                               'OTHER FEL': 'OTHER',
                               'OTHERMISD': 'OTHER'})
 
-    df_offenses['offense_bin'] = df_offenses['Offense'].map(series_offense)
+    df['offense_bin'] = df['Offense'].map(series_offense)
     
     # binary offense variables
-    offense_list = df_offenses['offense_bin'].unique().tolist()
+    offense_list = df['offense_bin'].unique().tolist()
     for offense in offense_list:
         series = pd.Series({offense: 1})
-        df_offenses[offense] = df_offenses['offense_bin'].map(series)
-        df_offenses[offense].fillna(value=0, inplace=True)
-
-    df = df_offenses
+        df[offense] = df['offense_bin'].map(series)
+        df[offense].fillna(value=0, inplace=True)
 
     # FC Offense
     df['FC'] = np.where(df['OffenseClass']=='FC', 1, 0)    
@@ -55,33 +60,19 @@ def get_offenses():
 
     # FS Offense
     df['FS'] = np.where(df['OffenseClass']=='FS', 1, 0)    
-    
-    # drop OffenseClass
-    df.drop('OffenseClass', axis=1, inplace=True)
-
-    # age
-    df.rename(columns={'age': 'Age'}, inplace=True)
-    
-    # made bail
-    df.rename(columns={'access': 'Made Bail'}, inplace=True)
-    
+ 
     # prior misdemeanors
-    df.rename(columns={'Misd priors': 'Number of Prior Misdemeanors'}, inplace=True)
+    df.rename(columns={'Misd priors': 'prior_misdemeanors'}, inplace=True)
    
     # prior misdemeanor (yes/no)
-    df['prior_misdemeanor'] = np.where(df['Number of Prior Misdemeanors']>=1, 1, 0)
+    df['prior_misdemeanor'] = np.where(df['prior_misdemeanors']>=1, 1, 0)
 
     # prior felonies
-    df.rename(columns={'felony priors': 'Number of Prior Felonies'}, inplace=True)
+    df.rename(columns={'felony priors': 'prior_felonies'}, inplace=True)
     
     # prior felony (yes/no)
-    df['prior_felony'] = np.where(df['Number of Prior Felonies']>=1, 1, 0)
+    df['prior_felony'] = np.where(df['prior_felonies']>=1, 1, 0)
 
-    # bond amount    
-    df[~(df['BOND $'] == 'NO BOND')]    
-    df['Bond Amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
-    df.drop('BOND $', axis=1, inplace=True)
-    
     # dwi
     series = pd.Series({'DWI': 1})
     df['dwi_offense'] = df['offense_bin'].map(series)
@@ -90,7 +81,7 @@ def get_offenses():
     # family offense
     df['family_offense'] = df['OffenseDescription'].str.contains('fam|chil|kid', case=False, na=False)
     df['family_offense'] = df['family_offense'].astype(int)
-
+   
     # black
     series = pd.Series({'BLACK': 1})
     df['black'] = df['race'].map(series)
@@ -105,15 +96,11 @@ def get_offenses():
     series = pd.Series({'F': 1})
     df['female'] = df['gender'].map(series)
     df['female'].fillna(value=0, inplace=True)
- 
+   
+    # female
+    series = pd.Series({'M': 1})
+    df['male'] = df['gender'].map(series)
+    df['male'].fillna(value=0, inplace=True)
 
     return df
 
-# test
-if __name__ == "__main__":
-   
-    df = get_offenses()
-
-    print(df.columns)
-
-    print(df.head())

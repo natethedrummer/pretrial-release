@@ -4,95 +4,32 @@ import pandas as pd
 from ImportData import get_offenses
 
 # create descriptive statistics table
-def descriptive_stats(df_offenses):
+def descriptive_stats(df):
 
     # disposed cases only
-    df = df_offenses[df_offenses['CASE DISPOSED STATUS'] == 'DISPOSED']
+    df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
     
     # select features    
-    df = df[['access',
-                'BOND $',
-                'felony priors',
-                'Misd priors',
-                'OffenseDescription',
-                'offense_bin',
-      		'OffenseClass',
+    df = df[['Made Bail',
+                'bond_amount',
+                'prior_felonies',
+                'prior_misdemeanors',
                 'hired_attorney',
-                'gender',
-                'race',
-                'age']]
-    
-    # FC Offense
-    df['FC Offense'] = np.where(df['OffenseClass']=='FC', 1, 0)    
-
-    # F1 Offense
-    df['F1 Offense'] = np.where(df['OffenseClass']=='F1', 1, 0)    
-    
-    # F2 Offense
-    df['F2 Offense'] = np.where(df['OffenseClass']=='F2', 1, 0)    
-
-    # F3 Offense
-    df['F3 Offense'] = np.where(df['OffenseClass']=='F3', 1, 0)    
-
-    # FS Offense
-    df['FS Offense'] = np.where(df['OffenseClass']=='FS', 1, 0)    
-    
-    # drop OffenseClass
-    df.drop('OffenseClass', axis=1, inplace=True)
-
-    # age
-    df.rename(columns={'age': 'Age'}, inplace=True)
-    
-    # made bail
-    df.rename(columns={'access': 'Made Bail'}, inplace=True)
-    
-    # prior misdemeanors
-    df.rename(columns={'Misd priors': 'Number of Prior Misdemeanors'}, inplace=True)
-   
-    # prior misdemeanor (yes/no)
-    df['Prior Misdemeanor (Yes/No)'] = np.where(df['Number of Prior Misdemeanors']>=1, 1, 0)
-
-    # prior felonies
-    df.rename(columns={'felony priors': 'Number of Prior Felonies'}, inplace=True)
-    
-    # prior felony (yes/no)
-    df['Prior Felony (Yes/No)'] = np.where(df['Number of Prior Felonies']>=1, 1, 0)
-
-    # bond amount    
-    df[~(df['BOND $'] == 'NO BOND')]    
-    df['Bond Amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
-    df.drop('BOND $', axis=1, inplace=True)
-    
-    # dwi
-    series = pd.Series({'DWI': 1})
-    df['DWI (Yes/No)'] = df['offense_bin'].map(series)
-    df['DWI (Yes/No)'].fillna(value=0, inplace=True)
-    
-    # family offense
-    df['Offense Against Family (Yes/No)'] = df['OffenseDescription'].str.contains('fam|chil|kid', case=False, na=False)
-    df['Offense Against Family (Yes/No)'] = df['Offense Against Family (Yes/No)'].astype(int)
-
-    # retained private attorney
-    df.rename(columns={'hired_attorney': 'Retained Private Attorney (Yes/No)'}, inplace=True)
-    
-    # male
-    series = pd.Series({'M': 1})
-    df['Male (Yes/No)'] = df['gender'].map(series)
-    df['Male (Yes/No)'].fillna(value=0, inplace=True)
-    df.drop('gender', axis=1, inplace=True)
-    
-    # black
-    series = pd.Series({'BLACK': 1})
-    df['Black (Yes/No)'] = df['race'].map(series)
-    df['Black (Yes/No)'].fillna(value=0, inplace=True)
-    df.groupby('race').count()
-    
-    # hispanic
-    series = pd.Series({'HISPANIC': 1})
-    df['Hispanic (Yes/No)'] = df['race'].map(series)
-    df['Hispanic (Yes/No)'].fillna(value=0, inplace=True)
-    df.drop('race', axis=1, inplace=True)
-   
+                'age',
+                'FC',
+		'F1',
+		'F2',
+		'F3',
+		'FS',
+		'prior_misdemeanor',
+		'prior_felony',
+		'bond_amount',
+		'dwi_offense',
+		'family_offense',
+		'male',
+		'black',
+		'hispanic']]
+  
     # produce summary statistics
     df = df.describe()
     
@@ -112,27 +49,17 @@ def descriptive_stats(df_offenses):
         }, inplace=True)
 
     # output to csv
-    df.to_csv('descriptive_statistics.csv')
-    
-    return df
+    return df.to_csv('descriptive_statistics.csv')
 
-# test
-if __name__ == "__main__":
-
-    df_offenses = get_offenses()
-
-    df = descriptive_stats(df_offenses)
-
-    print(df)
 
 # define bail_amount_by_demographic
-def bail_amount_by_demographic(df_offenses):
+def bail_amount_by_demographic(df):
 
     # create frames list
     frames = []
 
     # disposed cases only
-    df = df_offenses[df_offenses['CASE DISPOSED STATUS'] == 'DISPOSED']
+    df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
 
     # select features    
     df = df[['BOND $',
@@ -195,10 +122,4 @@ def bail_amount_by_demographic(df_offenses):
         df.to_csv('bail_by_demographics_' + str(i) + '.csv')
        
         i+=1
- 
-# test
-if __name__ == "__main__":
 
-    df_offenses = get_offenses()
-
-    bail_amount_by_demographic(df_offenses)
