@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from ImportData import get_offenses
-from Hissong import descriptive_stats, bail_amount_by_demographic 
+from DescribeData import descriptive_stats, bail_amount_by_demographic 
 
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
