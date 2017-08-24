@@ -23,7 +23,6 @@ def descriptive_stats(df):
 		'FS',
 		'prior_misdemeanor',
 		'prior_felony',
-		'bond_amount',
 		'dwi_offense',
 		'family_offense',
 		'male',
