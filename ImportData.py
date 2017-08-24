@@ -100,13 +100,18 @@ def get_offenses():
     series = pd.Series({'HISPANIC': 1})
     df['hispanic'] = df['race'].map(series)
     df['hispanic'].fillna(value=0, inplace=True)
+ 
+    # white
+    series = pd.Series({'WHITE': 1})
+    df['white'] = df['race'].map(series)
+    df['white'].fillna(value=0, inplace=True)
    
     # female
     series = pd.Series({'F': 1})
     df['female'] = df['gender'].map(series)
     df['female'].fillna(value=0, inplace=True)
    
-    # female
+    # male
     series = pd.Series({'M': 1})
     df['male'] = df['gender'].map(series)
     df['male'].fillna(value=0, inplace=True)
