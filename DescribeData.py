@@ -125,9 +125,8 @@ def bail_status_tree(df):
 
     df = df[['CASE DISPOSED STATUS','HCJ Booked','MADE Y / N','PRETRIAL STATUS AT DISPOSITION','bail type made simple']] 
 
-    print(df.describe(include='all'))
-    
-    print(df.head())
+    crosstab = pd.crosstab([df['CASE DISPOSED STATUS'],df['HCJ Booked'],df['MADE Y / N'],df['PRETRIAL STATUS AT DISPOSITION']], df['bail type made simple'],  margins=True)
 
-    crosstab = pd.crosstab(df, margins=True)
     print(crosstab)
+
+    return crosstab.to_csv('bail_status_tree.csv')
