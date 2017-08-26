@@ -3,15 +3,15 @@ import numpy as np
 import pandas as pd 
 
 
-# create descriptive statistics table
-def descriptive_stats(df):
+# create bail stats table
+def bail_stats(df):
 
     # disposed cases only
     df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
     
     # select features    
     df = df[['made_bail',
-                'bond_amount',
+                'bail_amount',
                 'prior_felonies',
                 'prior_misdemeanors',
                 'hired_attorney',
@@ -48,11 +48,11 @@ def descriptive_stats(df):
         }, inplace=True)
 
     # output to csv
-    return df.to_csv('descriptive_statistics.csv')
+    return df.to_csv('bail_stats.csv')
 
 
 # define bail_amount_by_demographic
-def bail_amount_by_demographic(df):
+def bail_amount_stats(df):
 
     # create frames list
     frames = []
@@ -116,12 +116,12 @@ def bail_amount_by_demographic(df):
             }, inplace=True)
 
         # output to excel
-        df.to_csv('bail_by_demographics_' + str(i) + '.csv')
+        df.to_csv('bail_amount_stats_' + str(i) + '.csv')
        
         i+=1
 
 
-def bail_status_tree(df):
+def ptr_stats(df):
 
     df = df[['CASE DISPOSED STATUS','HCJ Booked','MADE Y / N','PRETRIAL STATUS AT DISPOSITION','bail type made simple']] 
 
@@ -129,4 +129,4 @@ def bail_status_tree(df):
 
     print(crosstab)
 
-    return crosstab.to_csv('bail_status_tree.csv')
+    return crosstab.to_csv('ptr_stats.csv')

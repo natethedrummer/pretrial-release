@@ -9,14 +9,14 @@ def get_offenses():
     path_fmd = "https://raw.github.com/natethedrummer/pretrial-release/master/felony_offenses.csv"
     df = pd.read_csv(path_fmd)
 
-    # bond amount    
+    # bail amount    
     df[~(df['BOND $'] == 'NO BOND')]    
-    df['bond_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+    df['bail_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
 
-    # bond_amount_ln	
-    df = df[np.isfinite(df['bond_amount'])]
-    df = df[df['bond_amount'] > 0]
-    df['bond_amount_ln'] = np.log(df['bond_amount'])
+    # bail_amount_ln	
+    df = df[np.isfinite(df['bail_amount'])]
+    df = df[df['bail_amount'] > 0]
+    df['bail_amount_ln'] = np.log(df['bail_amount'])
 
     # age 
     df = df[df['age'] != "#VALUE!"]
