@@ -1,11 +1,15 @@
 # import packages
 from ImportData import get_offenses
-from DescribeData import descriptive_stats, bail_amount_by_demographic 
+from DescribeData import descriptive_stats, bail_amount_by_demographic, bail_status_tree 
 from ModelData import explain_bond_amount, explain_made_bail
 
 
 # get data frame of felony offenses and release status
 df = get_offenses()
+
+
+# bail status tree
+bail_status_tree(df)
 
 
 # descriptive statistics and mean bail amount

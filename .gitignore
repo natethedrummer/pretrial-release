@@ -2,6 +2,7 @@ __pycache__/
 *.xlsx
 *.csv
 !felony_offenses.csv
+!made_bail_predict.csv
 venv/
 *.png
 *.pyc

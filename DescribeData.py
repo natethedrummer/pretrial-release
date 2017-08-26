@@ -1,7 +1,7 @@
 # import packages
 import numpy as np
 import pandas as pd 
-from ImportData import get_offenses
+
 
 # create descriptive statistics table
 def descriptive_stats(df):
@@ -120,3 +120,14 @@ def bail_amount_by_demographic(df):
        
         i+=1
 
+
+def bail_status_tree(df):
+
+    df = df[['CASE DISPOSED STATUS','HCJ Booked','MADE Y / N','PRETRIAL STATUS AT DISPOSITION','bail type made simple']] 
+
+    print(df.describe(include='all'))
+    
+    print(df.head())
+
+    crosstab = pd.crosstab(df, margins=True)
+    print(crosstab)
