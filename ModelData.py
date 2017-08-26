@@ -4,40 +4,40 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-def explain_bond_amount(df):
+def model_bail_amount(df):
 
         # model 1: felony class, family, dwi, priors (yes/no)
-        results = smf.ols('bond_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony', data=df).fit()
+        results = smf.ols('bail_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony', data=df).fit()
         print(results.summary())
         Summary = results.summary()
         csv_summary = Summary.as_csv()
-        csv = open('bond_model1.csv', 'w')
+        csv = open('model_bail_amount1.csv', 'w')
         csv.write(csv_summary)
 
 
         # model 2: felony class, family, dwi, priors (yes/no), privateatt, black, hispanic, female, age
-        results = smf.ols('bond_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony + hired_attorney + black + hispanic + female + age', data=df).fit()
+        results = smf.ols('bail_amount_ln ~ F1 + F2 + F3 + FC + family_offense + dwi_offense + prior_felony + hired_attorney + black + hispanic + female + age', data=df).fit()
         print(results.summary())
         Summary = results.summary()
         csv_summary = Summary.as_csv()
-        csv = open('bond_model2.csv', 'w')
+        csv = open('model_bail_amount2.csv', 'w')
         csv.write(csv_summary)
 
-def explain_made_bail(df):
+def model_ptr(df):
 
         # model
-        results = smf.logit('made_bail ~ bond_amount_ln + hired_attorney + prior_felony + black + hispanic + female', data=df).fit()
+        results = smf.logit('made_bail ~ bail_amount_ln + hired_attorney + prior_felony + black + hispanic + female', data=df).fit()
         print(results.summary())
         Summary = results.summary()
         csv_summary = Summary.as_csv()
-        csv = open('made_bail_model.csv', 'w')
+        csv = open('model_ptr.csv', 'w')
         csv.write(csv_summary)
  
         # predict
         df = df[df['FS'] == 1]
-        df = df[['bond_amount_ln', 'hired_attorney', 'prior_felony', 'black', 'hispanic', 'female']]
+        df = df[['bail_amount_ln', 'hired_attorney', 'prior_felony', 'black', 'hispanic', 'female']]
 
-        scenarios = pd.read_csv('made_bail_predict.csv', usecols=['scenario','hired_attorney','prior_felony','black','hispanic','female'])
+        scenarios = pd.read_csv('predict_ptr.csv', usecols=['scenario','hired_attorney','prior_felony','black','hispanic','female'])
         
         df = pd.merge(df, scenarios, how='inner', on=['hired_attorney','prior_felony','black','hispanic','female'])
  
@@ -58,10 +58,10 @@ def explain_made_bail(df):
 
         df['FS'] = 1
         
-        df['bond_amount'] = np.exp(df['bond_amount_ln'])
+        df['bail_amount'] = np.exp(df['bail_amount_ln'])
 
         print(df)
 
-        df.to_csv('made_bail_predict.csv')
+        df.to_csv('predict_ptr.csv')
 
 
