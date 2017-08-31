@@ -9,19 +9,6 @@ def get_offenses():
     path_fmd = "https://raw.github.com/natethedrummer/pretrial-release/master/felony_offenses.csv"
     df = pd.read_csv(path_fmd)
 
-    # bail amount    
-    df[~(df['BOND $'] == 'NO BOND')]    
-    df['bail_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
-
-    # bail_amount_ln	
-    df = df[np.isfinite(df['bail_amount'])]
-    df = df[df['bail_amount'] > 0]
-    df['bail_amount_ln'] = np.log(df['bail_amount'])
-
-    # age 
-    df = df[df['age'] != "#VALUE!"]
-    df['age'] = df['age'].astype(float)
-
     # made bail
     df.rename(columns={'access': 'made_bail'}, inplace=True)
  
@@ -116,5 +103,6 @@ def get_offenses():
     df['male'] = df['gender'].map(series)
     df['male'].fillna(value=0, inplace=True)
 
+    print(df.groupby('HCJ Booked').count())
     return df
 
