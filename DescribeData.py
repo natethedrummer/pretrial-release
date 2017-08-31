@@ -8,7 +8,15 @@ def bail_stats(df):
 
     # disposed cases only
     df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
-    
+ 
+    # bail amount    
+    df[~(df['BOND $'] == 'NO BOND')]    
+    df['bail_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+
+    # age 
+    df = df[df['age'] != "#VALUE!"]
+    df['age'] = df['age'].astype(float)
+  
     # select features    
     df = df[['made_bail',
                 'bail_amount',
@@ -48,7 +56,7 @@ def bail_stats(df):
         }, inplace=True)
 
     # output to csv
-    return df.to_csv('bail_stats.csv')
+    df.to_csv('bail_stats.csv')
 
 
 # define bail_amount_by_demographic
@@ -81,8 +89,10 @@ def bail_amount_stats(df):
 	'30 to 45',
 	'Over 45']
 
-    df['age'] = df['age'].astype(float)
+    df = df[df['age'] != "#VALUE!"]
 
+    df['age'] = df['age'].astype(float)
+ 
     df['age category'] = pd.cut(df['age'], bins, labels=group_names)
 
     df_frame = df['Bail Amount'].groupby([df['age category'], df['sex']]).describe()
@@ -129,4 +139,4 @@ def ptr_stats(df):
 
     print(crosstab)
 
-    return crosstab.to_csv('ptr_stats.csv')
+    crosstab.to_csv('ptr_stats.csv')
