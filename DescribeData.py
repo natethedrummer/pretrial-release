@@ -1,7 +1,9 @@
 # import packages
 import numpy as np
 import pandas as pd 
+from ImportData import get_offenses
 
+df = get_offenses()
 
 # create bail stats table
 def bail_stats(df):
@@ -9,13 +11,14 @@ def bail_stats(df):
     # disposed cases only
     df = df[df['CASE DISPOSED STATUS'] == 'DISPOSED']
  
+    # booked cases only
+    #df = df[df['HCJ Booked'] == 'Booked']
+
     # bail amount    
-    df[~(df['BOND $'] == 'NO BOND')]    
-    df['bail_amount'] = (df[~(df['BOND $'] == 'NO BOND')])['BOND $'].astype(float)
+    df['bail_amount'] = pd.to_numeric(df['BOND $'], errors='coerce')
 
     # age 
-    df = df[df['age'] != "#VALUE!"]
-    df['age'] = df['age'].astype(float)
+    df['age'] = pd.to_numeric(df['age'], errors='coerce')
   
     # select features    
     df = df[['made_bail',
@@ -25,17 +28,17 @@ def bail_stats(df):
                 'hired_attorney',
                 'age',
                 'FC',
-		'F1',
-		'F2',
-		'F3',
-		'FS',
-		'prior_misdemeanor',
-		'prior_felony',
-		'dwi_offense',
-		'family_offense',
-		'male',
-		'black',
-		'hispanic']]
+                'F1',
+                'F2',
+                'F3',
+                'FS',
+                'prior_misdemeanor',
+                'prior_felony',
+                'dwi_offense',
+                'family_offense',
+                'male',
+                'black',
+                'hispanic']]
   
     # produce summary statistics
     df = df.describe()
@@ -58,6 +61,7 @@ def bail_stats(df):
     # output to csv
     df.to_csv('bail_stats.csv')
 
+    df
 
 # define bail_amount_by_demographic
 def bail_amount_stats(df):
