@@ -103,6 +103,5 @@ def get_offenses():
     df['male'] = df['gender'].map(series)
     df['male'].fillna(value=0, inplace=True)
 
-    print(df.groupby('HCJ Booked').count())
     return df
 
